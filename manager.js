@@ -6,7 +6,7 @@ var Discord = require("discord.js");
 process.chdir("/srv/jpland");
 
 
-const MAX_IDLE_MINUTES = 60;
+var MAX_IDLE_MINUTES = 60;
 
 class MinecraftServer extends EventEmitter {
 	constructor (cwd, jar) {
@@ -150,12 +150,12 @@ function commandHandler(input, priviledged) {
 			return String(error);
 		}
 	} else if (cmd == "help") {
-		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" to save resources, and allows you to start servers again using the `start <server>` command."\n +
+		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `start <server>` command.\n" +
 			"Use `list` to see the list of servers and their statuses.\n" +
-			priviledged ? "You are an admin and may also use these commands: `stop <server>`, `input <server> <command>` (input a command into a server's console), `eval <code>` (evaluate javascript in the Node.js process)." : ""
+			(priviledged ? "\nYou are an admin and may also use these commands: `stop <server>`, `input <server> <command>` (input a command into a server's console), `eval <code>` (evaluate javascript in the Node.js process)." : "");
 	} else {
 		//return `Unknown command \`${cmd}\`; commands are \`start\`, \`stop\`, \`input\`, \`list\`, and \`eval\`.`;
-		return `Unknown command \`${cmd}`\, use \`help\` for the list of commands.`;
+		return `Unknown command \`${cmd}\`, use \`help\` for the list of commands.`;
 	}
 }
 
@@ -172,7 +172,7 @@ if (process.env.DISCORD_TOKEN) {
 	dClient.login(process.env.DISCORD_TOKEN);
 	dClient.on("error", error => console.error(colors.red("Discord client error: " + error.message)));
 	function setStatus() {
-		dClient.setActivity("cmdchar is %, use %help for info");
+		dClient.user.setActivity("cmdchar is %, use %help for info");
 	}
 	setInterval(setStatus, 1000*60*30);
 	dClient.on("ready", () => {
