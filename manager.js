@@ -7,6 +7,7 @@ process.chdir("/srv/jpland");
 
 
 var MAX_IDLE_MINUTES = 60;
+var CMD_PREFIX = '%';
 
 class MinecraftServer extends EventEmitter {
 	constructor (cwd, jar) {
@@ -172,7 +173,7 @@ if (process.env.DISCORD_TOKEN) {
 	dClient.login(process.env.DISCORD_TOKEN);
 	dClient.on("error", error => console.error(colors.red("Discord client error: " + error.message)));
 	function setStatus() {
-		dClient.user.setActivity("cmdchar is %, use %help for info");
+		dClient.user.setActivity(`${CMD_PREFIX}help`);
 	}
 	setInterval(setStatus, 1000*60*30);
 	dClient.on("ready", () => {
@@ -181,8 +182,8 @@ if (process.env.DISCORD_TOKEN) {
 	});
 	dClient.on("message", message => {
 		if (message.channel.id != "452025433328975872") return;
-		if (message.content.startsWith('%')) {
-			let response = commandHandler(message.content.substr('%'.length), message.member && message.member.roles.map(x => x.name).includes("Minecraft admin"));
+		if (message.content.startsWith(CMD_PREFIX)) {
+			let response = commandHandler(message.content.substr(CMD_PREFIX.length), message.member && message.member.roles.map(x => x.name).includes("Minecraft admin"));
 			if (response) message.channel.send(response);
 		}
 	});
@@ -191,7 +192,7 @@ if (process.env.DISCORD_TOKEN) {
 		server.on("idle timeout", () => {
 			let capitalizedServerName = serverName[0].toUpperCase() + serverName.substring(1);
 			let channel = dClient.channels.get("452025433328975872");
-			if (channel) channel.send(`${capitalizedServerName} server has been shut down due to 1 hour of inactivity. Run \`%start ${serverName}\` when you want to play on it again.`);
+			if (channel) channel.send(`${capitalizedServerName} server has been shut down due to 1 hour of inactivity. Run \`${CMD_PREFIX}start ${serverName}\` when you want to play on it again.`);
 		});
 	}
 }
