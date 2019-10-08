@@ -189,8 +189,9 @@ if (process.env.DISCORD_TOKEN) {
 	for (let serverName in servers) {
 		let server = servers[serverName];
 		server.on("idle timeout", () => {
+			let capitalizedServerName = serverName[0].toUpperCase() + serverName.substring(1);
 			let channel = dClient.channels.get("452025433328975872");
-			if (channel) channel.send(`${serverName} server has been shut down due to 1 hour of inactivity. Run \`%start ${serverName}\` when you want to play on it again.`);
+			if (channel) channel.send(`${capitalizedServerName} server has been shut down due to 1 hour of inactivity. Run \`%start ${serverName}\` when you want to play on it again.`);
 		});
 	}
 }
