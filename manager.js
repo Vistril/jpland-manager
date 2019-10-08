@@ -5,6 +5,9 @@ var colors = require("colors");
 var Discord = require("discord.js");
 process.chdir("/srv/jpland");
 
+String.prototype.capitalize = function() {
+    return this[0].toUpperCase() + this.substring(1);
+};
 
 var MAX_IDLE_MINUTES = 60;
 var CMD_PREFIX = '%';
@@ -125,20 +128,20 @@ function commandHandler(input, priviledged) {
 
 	if (cmd == "start") {
 		if (!server) return `Unknown server ${serverName}`
-		if (server.process) return `${serverName} server is already running.`;
+		if (server.process) return `${serverName.capitalize()} server is already running.`;
 		server.start();
 		return `Starting ${serverName} server.`;
 	} else if (cmd == "stop") {
 		if (!priviledged) return unauthorized;
 		if (!server) return `Unknown server ${serverName}`
-		if (!server.process) return `${serverName} server is not running.`;
+		if (!server.process) return `${serverName.capitalize()} server is not running.`;
 		server.stop();
 		return `Stopping ${serverName} server.`;
 	} else if (cmd == "input") {
 		if (!priviledged) return unauthorized;
 		if (!server) return `Unknown server ${serverName}`
-		if (!server.process) return `${serverName} is not running.`;
-		if (args[2] == "list" || args[2] == "minecraft:list") return "`list` command is prohibited from running in console because it would interfere with idle minute counting.";
+		if (!server.process) return `${serverName.capitalize()} server is not running.`;
+		if (args[2] == "list" || args[2] == "minecraft:list") return "`{CMD_PREFIX}list` command is prohibited from running in console because it would interfere with idle minute counting.";
 		server.process.stdin.write(args.slice(2).join(" ") + '\n');
 		return;
 	} else if (cmd == "list") {
@@ -151,12 +154,11 @@ function commandHandler(input, priviledged) {
 			return String(error);
 		}
 	} else if (cmd == "help") {
-		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `start <server>` command.\n" +
-			"Use `list` to see the list of servers and their statuses.\n" +
-			(priviledged ? "\nYou are an admin and may also use these commands: `stop <server>`, `input <server> <command>` (input a command into a server's console), `eval <code>` (evaluate javascript in the Node.js process)." : "");
+		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `{CMD_PREFIX}start <server>` command.\n" +
+			"Use `{CMD_PREFIX}list` to see the list of servers and their statuses.\n" +
+			(priviledged ? "\nYou are an admin and may also use these commands: `{CMD_PREFIX}stop <server>`, `{CMD_PREFIX}input <server> <command>` (input a command into a server's console), `{CMD_PREFIX}eval <code>` (evaluate javascript in the Node.js process)." : "");
 	} else {
-		//return `Unknown command \`${cmd}\`; commands are \`start\`, \`stop\`, \`input\`, \`list\`, and \`eval\`.`;
-		return `Unknown command \`${cmd}\`, use \`help\` for the list of commands.`;
+		return `Unknown command \`{CMD_PREFIX}${cmd}\`, use \`{CMD_PREFIX}help\` for the list of commands.`;
 	}
 }
 
@@ -164,7 +166,7 @@ process.openStdin();
 process.stdin.on("data", data => {
 	data = data.toString().trim();
 	var response = commandHandler(data, true);
-	if (response) console.log(response.blue);
+	if (response) console.log(response.replace(/{CMD_PREFIX}/g, '').blue);
 });
 
 
@@ -184,15 +186,14 @@ if (process.env.DISCORD_TOKEN) {
 		if (message.channel.id != "452025433328975872") return;
 		if (message.content.startsWith(CMD_PREFIX)) {
 			let response = commandHandler(message.content.substr(CMD_PREFIX.length), message.member && message.member.roles.map(x => x.name).includes("Minecraft admin"));
-			if (response) message.channel.send(response);
+			if (response) message.channel.send(response.replace(/{CMD_PREFIX}/g, CMD_PREFIX));
 		}
 	});
 	for (let serverName in servers) {
 		let server = servers[serverName];
 		server.on("idle timeout", () => {
-			let capitalizedServerName = serverName[0].toUpperCase() + serverName.substring(1);
 			let channel = dClient.channels.get("452025433328975872");
-			if (channel) channel.send(`${capitalizedServerName} server has been shut down due to 1 hour of inactivity. Run \`${CMD_PREFIX}start ${serverName}\` when you want to play on it again.`);
+			if (channel) channel.send(`${serverName.capitalize()} server has been shut down due to 1 hour of inactivity. Run \`${CMD_PREFIX}start ${serverName}\` when you want to play on it again.`);
 		});
 	}
 }
