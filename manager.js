@@ -18,9 +18,10 @@ class MinecraftServer extends EventEmitter {
 		this.cwd = cwd;
 		this.jar = jar;
 		this.idleMinutes = 0;
-		//this.thisIdleCheckTime = 0;
-		//this.lastIdleCheckTime = 0;
-		this.listCommand = "minecraft:list";
+		// for 1.14.4 (paper)
+		this.listCommand = "minecraft:list"; 
+		this.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0 of a max \d{1,} players online:$/;
+		this.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,} of a max \d{1,} players online:/;
 	}
 
 	start() {
@@ -43,13 +44,11 @@ class MinecraftServer extends EventEmitter {
 		});
 		this.process.once("exit", () => {
 			this.process = undefined;
-			clearInterval(this.idleCheckInterval);
+			clearInterval(this.listInterval);
 			this._log("Server has exited".red);
 		});
 		this.idleMinutes = 0;
-		this.idleCheckInterval = setInterval(()=>{
-			//this.lastIdleCheckTime = this.thisIdleCheckTime;
-			//this.thisIdleCheckTime = Date.now();
+		this.listInterval = setInterval(()=>{
 			this.process.stdin.write(this.listCommand + "\n");
 		}, 60000);
 		return this;
@@ -71,8 +70,6 @@ class MinecraftServer extends EventEmitter {
 	_handleOutput(line) {
 		if (this._testIfConsoleLineIndicatesNoPlayersOnline(line)) {
 			// no players are online
-			// tried to make it ignore arbitrary listings but I can't seem to figure it out and the issue is not a big deal.
-			//if (Date.now() - this.lastIdleCheckTime < IDLE_CHECK_INTERVAL) return; // this list must've been called by someone else, ignore it*/
 			this._log("Detected no players online; incrementing idleMinutes".yellow);
 			this.idleMinutes++;
 			if (this.idleMinutes >= MAX_IDLE_MINUTES)  {
@@ -83,20 +80,17 @@ class MinecraftServer extends EventEmitter {
 			}
 		} else if (this._testIfConsoleLineIndicatesPlayersOnline(line)) {
 			// players are online
-			//if (Date.now() - this.lastIdleCheckTime < IDLE_CHECK_INTERVAL) return; // ditto*/
 			this._log("Detected players online; resetting idle minutes".yellow);
 			this.idleMinutes = 0;
 		}
 	}
 
 	_testIfConsoleLineIndicatesPlayersOnline(line) {
-		let foqat = line.substr(line.indexOf(" INFO]: ")+8);
-		let fojat = foqat.substr(0, foqat.indexOf(": "));
-		return (fojat.startsWith("There are ") && fojat.endsWith(" of a max 20 players online"));
+		return this.listNotEmptyRegex.test(line);
 	}
 
 	_testIfConsoleLineIndicatesNoPlayersOnline(line) {
-		return line.endsWith(" INFO]: There are 0 of a max 20 players online:");
+		return this.listEmptyRegex.test(line);
 	}
 	
 }
@@ -106,8 +100,10 @@ var servers = {
 	creative: new MinecraftServer("creative", "paper.jar"),
 	survival: new MinecraftServer("survival", "paper.jar"),
 	modded: new MinecraftServer("forge", "forge-1.12.2-14.23.5.2768-universal.jar"),
+	multiverse: new MinecraftServer("multiverse", "paper-1618.jar"),
 };
 
+//TODO regex but if it's not broken, don't fix it 🤷
 servers.modded._testIfConsoleLineIndicatesPlayersOnline = function(line) {
 	var fojat = line.substr(line.indexOf("] [Server thread/INFO] [minecraft/DedicatedServer]: There are "));
 	return (fojat.startsWith("] [Server thread/INFO] [minecraft/DedicatedServer]: There are ") && fojat.endsWith(" players online:"));
@@ -116,6 +112,9 @@ servers.modded._testIfConsoleLineIndicatesNoPlayersOnline = function(line) {
 	return line.endsWith("] [Server thread/INFO] [minecraft/DedicatedServer]: There are 0/20 players online:");
 }
 servers.modded.listCommand = "list";
+
+servers.multiverse.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0\/\d{1,} players online:$/;
+servers.multiverse.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,}\/\d{1,} players online:$/;
 
 
 function commandHandler(input, priviledged) {
