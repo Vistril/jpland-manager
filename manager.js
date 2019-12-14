@@ -18,7 +18,7 @@ class MinecraftServer extends EventEmitter {
 		this.cwd = cwd;
 		this.jar = jar;
 		this.idleMinutes = 0;
-		// for 1.14.4 (paper)
+		// for 1.14.4 (paper) // also working on 1.15
 		this.listCommand = "minecraft:list"; 
 		this.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0 of a max \d{1,} players online:$/;
 		this.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,} of a max \d{1,} players online:/;
@@ -26,7 +26,7 @@ class MinecraftServer extends EventEmitter {
 
 	start() {
 		this._log("Starting server".green);
-		this.process = child_process.spawn("java", ["-Xmx4G", "-jar", this.jar], {cwd: this.cwd});
+		this.process = child_process.spawn("nice", ["-n", "1", "java", "-Xmx4G", "-jar", this.jar], {cwd: this.cwd});
 		this.process.on("error", error => {
 			this.process.emit("exit");
 			this._log(error.stack.red, true);
