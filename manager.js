@@ -99,7 +99,7 @@ class MinecraftServer extends EventEmitter {
 var servers = {
 	creative: new MinecraftServer("creative", "paper.jar"),
 	survival: new MinecraftServer("survival", "paper.jar"),
-	modded: new MinecraftServer("forge", "forge-1.12.2-14.23.5.2768-universal.jar"),
+	modded: new MinecraftServer("forge", "forge.jar"),
 	multiverse: new MinecraftServer("multiverse", "paper-1618.jar"),
 };
 
