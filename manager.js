@@ -169,7 +169,7 @@ function commandHandler(input, priviledged) {
 	} else if (cmd == "help") {
 		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `{CMD_PREFIX}start <server>` command.\n" +
 			"Use `{CMD_PREFIX}list` to see the list of servers and their statuses.\n" +
-			(priviledged ? "\nYou are an admin and may also use these commands: `{CMD_PREFIX}stop <server>`, `{CMD_PREFIX}input <server> <command>` (input a command into a server's console), {CMD_PREFIX}lock <server> (prevent automatic shutdown), `{CMD_PREFIX}eval <code>` (evaluate javascript in the Node.js process)." : "");
+			(priviledged ? "\nYou are an admin and may also use these commands: `{CMD_PREFIX}stop <server>`, `{CMD_PREFIX}input <server> <command>` (input a command into a server's console), `{CMD_PREFIX}lock <server>` (prevent automatic shutdown), `{CMD_PREFIX}eval <code>` (evaluate javascript in the Node.js process)." : "");
 	} else {
 		return `Unknown command \`{CMD_PREFIX}${cmd}\`, use \`{CMD_PREFIX}help\` for the list of commands.`;
 	}
