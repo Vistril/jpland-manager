@@ -75,7 +75,7 @@ class MinecraftServer extends EventEmitter {
 			this._log("Detected no players online; incrementing idleMinutes".yellow);
 			this.idleMinutes++;
 			if (this.idleMinutes >= MAX_IDLE_MINUTES)  {
-				if (this.locked) {
+				if (!this.locked) {
 					this.idleMinutes = 0;
 					this.stop();
 					this._log("Shutting down due to inactivity".red);
