@@ -19,6 +19,7 @@ class MinecraftServer extends EventEmitter {
 		this.jvm_args = ["-Xmx4G"];
 		this.jar = jar;
 		this.idleMinutes = 0;
+		this.locked = false;
 		// for 1.14.4 (paper) // also working on 1.15
 		this.listCommand = "minecraft:list"; 
 		this.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0 of a max \d{1,} players online:$/;
@@ -74,10 +75,14 @@ class MinecraftServer extends EventEmitter {
 			this._log("Detected no players online; incrementing idleMinutes".yellow);
 			this.idleMinutes++;
 			if (this.idleMinutes >= MAX_IDLE_MINUTES)  {
-				this.idleMinutes = 0;
-				this.stop();
-				this._log("Shutting down due to inactivity".red);
-				this.emit("idle timeout");
+				if (this.locked) {
+					this.idleMinutes = 0;
+					this.stop();
+					this._log("Shutting down due to inactivity".red);
+					this.emit("idle timeout");
+				} else {
+					this._log("Idle timeout exceeded but ignoring because server is locked".yellow);
+				}
 			}
 		} else if (this._testIfConsoleLineIndicatesPlayersOnline(line)) {
 			// players are online
@@ -146,6 +151,14 @@ function commandHandler(input, priviledged) {
 		return;
 	} else if (cmd == "list") {
 		return `Servers: ${Object.keys(servers).map(x => `${x} (${servers[x].process ? 'running' : 'stopped'})`).join(', ')}`;
+	} else if (cmd == "lock") {
+		if (!priviledged) return unauthorized;
+		if (!server) return `Unknown server ${serverName}`;
+		if (server.locked = !server.locked) {
+			return `${serverName.capitalize()} server will be exempt from idle timeout.`;
+		} else {
+			return `$${serverName.capitalize()} server will no longer be exempt from idle timeout.`;
+		}
 	} else if (cmd == "eval") {
 		if (!priviledged) return unauthorized;
 		try {
@@ -156,7 +169,7 @@ function commandHandler(input, priviledged) {
 	} else if (cmd == "help") {
 		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `{CMD_PREFIX}start <server>` command.\n" +
 			"Use `{CMD_PREFIX}list` to see the list of servers and their statuses.\n" +
-			(priviledged ? "\nYou are an admin and may also use these commands: `{CMD_PREFIX}stop <server>`, `{CMD_PREFIX}input <server> <command>` (input a command into a server's console), `{CMD_PREFIX}eval <code>` (evaluate javascript in the Node.js process)." : "");
+			(priviledged ? "\nYou are an admin and may also use these commands: `{CMD_PREFIX}stop <server>`, `{CMD_PREFIX}input <server> <command>` (input a command into a server's console), {CMD_PREFIX}lock <server> (prevent automatic shutdown), `{CMD_PREFIX}eval <code>` (evaluate javascript in the Node.js process)." : "");
 	} else {
 		return `Unknown command \`{CMD_PREFIX}${cmd}\`, use \`{CMD_PREFIX}help\` for the list of commands.`;
 	}
