@@ -157,7 +157,7 @@ function commandHandler(input, priviledged) {
 		if (server.locked = !server.locked) {
 			return `${serverName.capitalize()} server will be exempt from idle timeout.`;
 		} else {
-			return `$${serverName.capitalize()} server will no longer be exempt from idle timeout.`;
+			return `${serverName.capitalize()} server will no longer be exempt from idle timeout.`;
 		}
 	} else if (cmd == "eval") {
 		if (!priviledged) return unauthorized;
