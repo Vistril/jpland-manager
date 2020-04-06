@@ -106,6 +106,7 @@ var servers = {
 	creative: new MinecraftServer("creative", "paper.jar"),
 	survival: new MinecraftServer("survival", "paper.jar"),
 	modded: new MinecraftServer("forge", "forge.jar"),
+	modded2: new MinecraftServer("modded2", "forge.jar"),
 	multiverse: new MinecraftServer("multiverse", "paper-1618.jar"),
 };
 
@@ -118,6 +119,9 @@ servers.modded._testIfConsoleLineIndicatesNoPlayersOnline = function(line) {
 	return line.endsWith("] [Server thread/INFO] [minecraft/DedicatedServer]: There are 0/20 players online:");
 }
 servers.modded.listCommand = "list";
+servers.modded2._testIfConsoleLineIndicatesPlayersOnline = servers.modded._testIfConsoleLineIndicatesPlayersOnline;
+servers.modded2._testIfConsoleLineIndicatesNoPlayersOnline = servers.modded._testIfConsoleLineIndicatesNoPlayersOnline;
+servers.modded2.listCommand = servers.modded.listCommand;
 
 servers.multiverse.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0\/\d{1,} players online:$/;
 servers.multiverse.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,}\/\d{1,} players online:$/;
