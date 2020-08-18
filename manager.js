@@ -20,10 +20,10 @@ class MinecraftServer extends EventEmitter {
 		this.jar = jar;
 		this.idleMinutes = 0;
 		this.locked = false;
-		// 1.16.1
+		// 1.16.2
 		this.listCommand = "minecraft:list"; 
-		this.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0 of a max of \d{1,} players online:$/;
-		this.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,} of a max of \d{1,} players online:/;
+		this.listEmptyRegex = /^\[\d\d:\d\d:\d\d\] \[Server thread\/INFO\]: There are 0 of a max of \d{1,} players online:$/;
+		this.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d\] \[Server thread\/INFO\]: There are [1-9]\d{0,} of a max of \d{1,} players online:/;
 	}
 
 	start() {
