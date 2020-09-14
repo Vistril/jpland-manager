@@ -103,7 +103,7 @@ class MinecraftServer extends EventEmitter {
 
 
 var servers = {
-	bmc: new MinecraftServer("Ulaanbataarnagar", "paper.jar"),
+	bmc: new MinecraftServer("bmc", "paper.jar"),
 };
 
 /*//TODO regex but if it's not broken, don't fix it 🤷
@@ -167,7 +167,7 @@ function commandHandler(input, priviledged) {
 			return String(error);
 		}
 	} else if (cmd == "help") {
-		return "JPLand Manager automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `{CMD_PREFIX}start <server>` command.\n" +
+		return "Streamline automatically shuts down Minecraft servers after "+MAX_IDLE_MINUTES+" minutes to save resources, and allows you to start servers again using the `{CMD_PREFIX}start <server>` command.\n" +
 			"Use `{CMD_PREFIX}list` to see the list of servers and their statuses.\n" +
 			(priviledged ? "\nYou are an admin and may also use these commands: `{CMD_PREFIX}stop <server>`, `{CMD_PREFIX}input <server> <command>` (input a command into a server's console), `{CMD_PREFIX}lock <server>` (prevent automatic shutdown), `{CMD_PREFIX}eval <code>` (evaluate javascript in the Node.js process)." : "");
 	} else {
@@ -187,13 +187,13 @@ if (process.env.DISCORD_TOKEN) {
 	var dClient = new Discord.Client();
 	dClient.login(process.env.DISCORD_TOKEN);
 	dClient.on("error", error => console.error(colors.red("Discord client error: " + error.message)));
-	function setStatus() {
+	/*function setStatus() {
 		dClient.user.setActivity(`${CMD_PREFIX}help`);
-	}
-	setInterval(setStatus, 1000*60*30);
+	}*/
+	//setInterval(setStatus, 1000*60*30);
 	dClient.on("ready", () => {
 		console.log("Discord client is ready.".green);
-		setStatus();
+		//setStatus();
 	});
 	dClient.on("message", message => {
 		if (message.content.startsWith(CMD_PREFIX)) {
@@ -211,4 +211,4 @@ if (process.env.DISCORD_TOKEN) {
 }
 
 
-console.log("JPLand Manager is now running.".green);
+console.log("Streamline is now running.".green);
