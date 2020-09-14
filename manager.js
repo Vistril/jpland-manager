@@ -9,7 +9,7 @@ String.prototype.capitalize = function() {
     return this[0].toUpperCase() + this.substring(1);
 };
 
-var MAX_IDLE_MINUTES = 60;
+//var MAX_IDLE_MINUTES = 60;
 var CMD_PREFIX = '%';
 
 class MinecraftServer extends EventEmitter {
@@ -50,9 +50,9 @@ class MinecraftServer extends EventEmitter {
 			this._log("Server has exited".red);
 		});
 		this.idleMinutes = 0;
-		this.listInterval = setInterval(()=>{
-			this.process.stdin.write(this.listCommand + "\n");
-		}, 60000);
+		//this.listInterval = setInterval(()=>{
+			//this.process.stdin.write(this.listCommand + "\n");
+		//}, 60000);
 		return this;
 	}
 
@@ -70,7 +70,7 @@ class MinecraftServer extends EventEmitter {
 		return console[isError ? "error" : "log"](`[${this.cwd}]`[isError ? "red" : "green"], msg);
 	}
 	_handleOutput(line) {
-		if (this._testIfConsoleLineIndicatesNoPlayersOnline(line)) {
+		/*if (this._testIfConsoleLineIndicatesNoPlayersOnline(line)) {
 			// no players are online
 			this._log("Detected no players online; incrementing idleMinutes".yellow);
 			this.idleMinutes++;
@@ -88,7 +88,7 @@ class MinecraftServer extends EventEmitter {
 			// players are online
 			this._log("Detected players online; resetting idle minutes".yellow);
 			this.idleMinutes = 0;
-		}
+		}*/
 	}
 
 	_testIfConsoleLineIndicatesPlayersOnline(line) {
@@ -104,7 +104,6 @@ class MinecraftServer extends EventEmitter {
 
 var servers = {
 	bmc: new MinecraftServer("Ulaanbataarnagar", "paper.jar"),
-	
 };
 
 /*//TODO regex but if it's not broken, don't fix it 🤷
