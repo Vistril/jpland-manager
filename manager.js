@@ -3,7 +3,7 @@ var child_process = require("child_process");
 var EventEmitter = require("events").EventEmitter;
 var colors = require("colors");
 var Discord = require("discord.js");
-process.chdir("/srv/jpland");
+process.chdir("/bmc/");
 
 String.prototype.capitalize = function() {
     return this[0].toUpperCase() + this.substring(1);
@@ -16,7 +16,7 @@ class MinecraftServer extends EventEmitter {
 	constructor (cwd, jar) {
 		super();
 		this.cwd = cwd;
-		this.jvm_args = ["-Xmx4G"];
+		this.jvm_args = ["-Xmx6G"];
 		this.jar = jar;
 		this.idleMinutes = 0;
 		this.locked = false;
@@ -103,14 +103,11 @@ class MinecraftServer extends EventEmitter {
 
 
 var servers = {
-	creative: new MinecraftServer("creative", "paper.jar"),
-	survival: new MinecraftServer("survival", "paper.jar"),
-	modded: new MinecraftServer("forge", "forge.jar"),
-	modded2: new MinecraftServer("modded2", "forge.jar"),
-	multiverse: new MinecraftServer("multiverse", "paper-1618.jar"),
+	bmc: new MinecraftServer("Ulaanbataarnagar", "paper.jar"),
+	
 };
 
-//TODO regex but if it's not broken, don't fix it 🤷
+/*//TODO regex but if it's not broken, don't fix it 🤷
 servers.modded._testIfConsoleLineIndicatesPlayersOnline = function(line) {
 	var fojat = line.substr(line.indexOf("] [Server thread/INFO] [minecraft/DedicatedServer]: There are "));
 	return (fojat.startsWith("] [Server thread/INFO] [minecraft/DedicatedServer]: There are ") && fojat.endsWith(" players online:"));
@@ -124,7 +121,7 @@ servers.modded2._testIfConsoleLineIndicatesNoPlayersOnline = servers.modded._tes
 servers.modded2.listCommand = servers.modded.listCommand;
 
 servers.multiverse.listEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are 0\/\d{1,} players online:$/;
-servers.multiverse.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,}\/\d{1,} players online:$/;
+servers.multiverse.listNotEmptyRegex = /^\[\d\d:\d\d:\d\d INFO\]: There are [1-9]\d{0,}\/\d{1,} players online:$/;*/
 
 
 function commandHandler(input, priviledged) {
