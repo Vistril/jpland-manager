@@ -16,7 +16,7 @@ class MinecraftServer extends EventEmitter {
 	constructor (cwd, jar) {
 		super();
 		this.cwd = cwd;
-		this.jvm_args = ["-Xmx6G"];
+		this.jvm_args = ["-Xmx6G", "-Xms6G", "-jar", "paper.jar"];
 		this.jar = jar;
 		this.idleMinutes = 0;
 		this.locked = false;
@@ -28,7 +28,7 @@ class MinecraftServer extends EventEmitter {
 
 	start() {
 		this._log("Starting server".green);
-		this.process = child_process.spawn("nice", ["-n", "1", "java"].concat(this.jvm_args).concat(["-jar", this.jar]), {cwd: this.cwd});
+		this.process = child_process.spawn("java", [this.jvm_args]);
 		this.process.on("error", error => {
 			this.process.emit("exit");
 			this._log(error.stack.red, true);
