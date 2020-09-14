@@ -196,7 +196,7 @@ if (process.env.DISCORD_TOKEN) {
 	});
 	dClient.on("message", message => {
 		if (message.content.startsWith(CMD_PREFIX)) {
-			let response = commandHandler(message.content.substr(CMD_PREFIX.length), message.member && message.member.guild.id == "357038384121905152" && message.member.roles.map(x => x.name).includes("Minecraft admin"));
+			let response = commandHandler(message.content.substr(CMD_PREFIX.length), message.member.id == "251909499189854209");
 			if (response) message.channel.send(response.replace(/{CMD_PREFIX}/g, CMD_PREFIX));
 		}
 	});
