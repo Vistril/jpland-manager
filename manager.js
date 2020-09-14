@@ -3,7 +3,7 @@ var child_process = require("child_process");
 var EventEmitter = require("events").EventEmitter;
 var colors = require("colors");
 var Discord = require("discord.js");
-process.chdir("../bmc/");
+process.chdir("/home/seth/bmc/");
 
 String.prototype.capitalize = function() {
     return this[0].toUpperCase() + this.substring(1);
