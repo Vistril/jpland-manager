@@ -28,7 +28,7 @@ class MinecraftServer extends EventEmitter {
 
 	start() {
 		this._log("Starting server".green);
-		this.process = child_process.spawn("java", [this.jvm_args]);
+		this.process = child_process.spawn("java", this.jvm_args);
 		this.process.on("error", error => {
 			this.process.emit("exit");
 			this._log(error.stack.red, true);
